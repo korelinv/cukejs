@@ -16,7 +16,7 @@ Feature: test feature
         Then sign out
         #Then test commented
 
-    Scenario Outline:
+    Scenario Outline: test outline
         Then check <foo>
         Then index <i>
 

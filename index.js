@@ -1,10 +1,8 @@
 const featureParser = require('./lib/featureParser');
 
 
-function featureBuilder(feature)
+function testBuilder(feature)
 {
-
-    let hasBackground = (0 < feature.background.content.length);
 
     let scenarios = feature.scenario.map((scenario) => {
         let tags = feature.tags;
@@ -13,11 +11,53 @@ function featureBuilder(feature)
         return {tags, name, content};
     });
 
+    let outlines = feature.outline
+        .map((outline) => {
+            let tags = feature.tags;
+            let name = `${feature.name} ${feature.background.name} ${outline.name}`.trim();
 
-    return [].concat(scenarios);
+            let tableOfContent = {};
+            let tableOfContentLength = 0;
+            let variablesLookup = {};
+
+            outline.tableOfContent.shift()
+            .forEach((variableName, index) => {
+                variablesLookup[index] = variableName;
+                tableOfContent[variableName] = [];
+            });
+
+            outline.tableOfContent.forEach((row) => {
+                tableOfContentLength++;
+                row.forEach((element, index) => {
+                    tableOfContent[variablesLookup[index]].push(element);
+                });
+            });
+
+            let content = feature.background.content.concat(outline.content);
+
+            return new Array(tableOfContentLength).fill().map((element, index) => {
+                return {
+                    tags,
+                    name: `${name} #${index}`,
+                    content: content.map((line) => {
+                        let resultLine = line;
+                        for (variable in tableOfContent)
+                        {
+                            let variableRegexp = new RegExp(`<${variable}>`,'g');
+                            let variableValue = tableOfContent[variable][index];
+                            resultLine = resultLine.replace(variableRegexp, variableValue);
+                        };
+                        return resultLine;
+                    })
+                };
+            });
+
+        });
+
+    return [].concat(scenarios).concat(...outlines);
 };
 
-console.log(featureBuilder(featureParser('./features/test.feature')));
+console.log(JSON.stringify(testBuilder(featureParser('./features/test.feature')), null, '  '));
 
 
 
