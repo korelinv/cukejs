@@ -1,3 +1,33 @@
+const featureParser = require('./lib/featureParser');
+
+
+function featureBuilder(feature)
+{
+
+    let hasBackground = (0 < feature.background.content.length);
+
+    let scenarios = feature.scenario.map((scenario) => {
+        let tags = feature.tags;
+        let name = `${feature.name} ${feature.background.name} ${scenario.name}`.trim();
+        let content = feature.background.content.concat(scenario.content);
+        return {tags, name, content};
+    });
+
+
+    return [].concat(scenarios);
+};
+
+console.log(featureBuilder(featureParser('./features/test.feature')));
+
+
+
+function DefineStep(regexp, method) {
+    return {
+        method,
+        regexp,
+    };
+};
+
 function FindDefenition(text, defenitions) {
     let matches = defenitions.filter(({regexp}) => {
         return -1 !== text.search(regexp);
@@ -12,34 +42,16 @@ function FindDefenition(text, defenitions) {
 function BuidStep(text, defeniton) {
 
     let params = defeniton.regexp.exec(text)
-        .filter((value, index) => ((0 < index) && (index <= params.length)));
+    params = params.filter((value, index) => ((0 < index) && (index <= params.length)));
     let method = defeniton.method;
 
     return {method, params};
 };
 
+function LaunchStep(step) {
+    return step.method.apply(this, step.params);
+};
+
 function ParseSteps(block, defenitions) {
     return block.map((step) => FindDefenition(step, defenitions));
 };
-
-
-//testdata
-
-let testDefs = [
-    {
-        regexp: /test (a)(bc)/,
-        method: function a() {}
-    },
-    {
-        regexp: /no match/g,
-        method: () => {}
-    },
-    {
-        regexp: /random/g,
-        method: () => {}
-    }
-];
-
-console.log(
-    BuidStep('Then test abc', FindDefenition('Then test abc', testDefs))
-);
