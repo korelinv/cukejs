@@ -2,11 +2,7 @@ const featureParser = require('./lib/featureParser');
 const testBuilder = require('./lib/testBuilder');
 
 
-console.log(JSON.stringify(testBuilder(featureParser('./features/test.feature')), null, '  '));
-
-
-
-function DefineStep(regexp, method) {
+function defineStep(regexp, method) {
     return {
         method,
         regexp,
@@ -33,10 +29,65 @@ function BuidStep(text, defeniton) {
     return {method, params};
 };
 
-function LaunchStep(step) {
+function launchStep(step) {
     return step.method.apply(this, step.params);
 };
 
-function ParseSteps(block, defenitions) {
-    return block.map((step) => FindDefenition(step, defenitions));
+function parseSteps(steps, defenitions)
+{
+    return steps.map((step) => FindDefenition(step, defenitions));
 };
+
+
+
+let tests = testBuilder(featureParser('./features/test.feature'));
+
+
+const HOOKS = {
+    before: () => {},
+    after: () => {},
+    beforeStep: () => {},
+    afterStep: () => {}
+};
+
+const STEP_STATUS = {
+    PENDING: 0,
+    PASSED: 1,
+    FAILED: 2
+};
+
+function runTest(test, stepDefenitions, hooks)
+{
+
+    let report = Object.assign(HOOKS, hooks);
+    let steps = parseSteps(test.content, stepDefenitions);
+
+    report.before();
+
+    steps.forEach((step) => {
+
+        let status = STEP_STATUS.PENDING;
+
+        report.beforeStep();
+        try
+        {
+            launchStep(step)
+            status = STEP_STATUS.PASSED;
+        }
+        catch (error)
+        {
+            status = STEP_STATUS.FAILED;
+        };
+        report.afterStep();
+    });
+
+    report.after();
+
+};
+
+let sd = [
+    defineStep(/^Log in$/, () => {}),
+    defineStep(/^logout$/, () => {throw 'error thrown'})
+];
+
+runTest(tests[0], sd);
