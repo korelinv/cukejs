@@ -67,7 +67,7 @@ function execute({executor, generator, hooks, resolve, reject}) {
         let stop = (error) => {
             hooks.failed({error, step: value});
             hooks.after({step: value});
-            reject(error)
+            reject({error, step: value})
         };
         let result;
         try
@@ -98,48 +98,33 @@ function runTest(test, stepDefenitions, hooks)
     let report = Object.assign(HOOKS, hooks);
     let steps = parseSteps(test.content, stepDefenitions);
 
-//    report.before();
-//
-//    steps.forEach((step) => {
-//
-//        let status = STEP_STATUS.PENDING;
-//        let error;
-//
-//        report.beforeStep();
-//        try
-//        {
-//            launchStep(step)
-//            status = STEP_STATUS.PASSED;
-//            report.stepPassed({status, step: step.raw});
-//        }
-//        catch (error)
-//        {
-//            status = STEP_STATUS.FAILED;
-//            report.stepFailed({error, status, step: step.raw});
-//        };
-//        report.afterStep();
-//    });
-//
-//    report.after();
-
+    report.before();
     execute({
         executor: launchStep,
         generator: generatorFactory(steps),
         hooks: {
-            before: () => {},
-            after: () => {},
-            passed: (data) => console.log(data),
-            failed: (data) => console.log(data)
+            before: report.beforeStep,
+            after: report.afterStep,
+            passed: report.stepPassed,
+            failed: report.stepFailed
         },
-        resolve: () => console.log('done'),
-        reject: (e) => console.log(`failed: ${e}`)
-    })
+        resolve: () => {
+            report.testPassed();
+            report.after();
+        },
+        reject: ({error, step}) => {
+            report.testFailed()
+            report.after();
+        }
+    });
 
 };
 
 const HOOKS = {
     before: () => {},
     after: () => {},
+    testPassed: () => {},
+    testFailed: () => {},
     beforeStep: () => {},
     afterStep: () => {},
     stepPassed: () => {},
@@ -158,8 +143,14 @@ let sd = [
     defineStep(/^logout$/, () => {throw 'error thrown'})
 ];
 let hooks = {
-    stepPassed: (data) => console.log(data),
-    stepFailed: (data) => console.log(data)
+    before: () => console.log('before'),
+    after: () => console.log('after'),
+    testPassed: () => console.log('testPassed'),
+    testFailed: () => console.log('testFailed'),
+    beforeStep: () => console.log('beforeStep'),
+    afterStep: () => console.log('afterStep'),
+    stepPassed: () => console.log('stepPassed'),
+    stepFailed: () => console.log('stepFailed')
 }
 runTest(tests[0], sd, hooks);
 
