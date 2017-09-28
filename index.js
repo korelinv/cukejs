@@ -10,32 +10,33 @@ function DefineStep(regexp, method) {
     };
 };
 
-const HOOKS = {
-    before: () => {},
-    after: () => {},
-    testPassed: () => {},
-    testFailed: () => {},
-    beforeStep: () => {},
-    afterStep: () => {},
-    stepPassed: () => {},
-    stepFailed: () => {}
-};
 let tests = testBuilder(featureParser('./features/test.feature'));
 
 let sd = [
-    DefineStep(/^Log in as "(.*)"$/, (user) => {console.log(user)}),
-    DefineStep(/^logout$/, () => {})
+    DefineStep(/^Log in as "(.*)"$/, function(user) {
+        //console.log(user)
+    }),
+    DefineStep(/^logout$/, function() {
+        console.log(this);
+        console.log(`tid: ${tid}`);
+    })
 ];
 let hooks = {
-    /*
-    before: () => console.log('before'),
-    after: () => console.log('after'),
-    testPassed: () => console.log('testPassed'),
-    testFailed: () => console.log('testFailed'),
-    beforeStep: () => console.log('beforeStep'),
-    afterStep: () => console.log('afterStep'),
-    stepPassed: () => console.log('stepPassed'),
-    stepFailed: () => console.log('stepFailed')
-    */
+
+    before: ({tid, context}) => {
+        console.log('before');
+        context.tid = tid;
+    },
+    //after: ({tid}) => {
+    //    console.log(tid);
+    //    console.log('after');
+    //},
+    //testPassed: () => console.log('testPassed'),
+    //testFailed: () => console.log('testFailed'),
+    //beforeStep: () => console.log('beforeStep'),
+    //afterStep: () => console.log('afterStep'),
+    //stepPassed: () => console.log('stepPassed'),
+    //stepFailed: () => console.log('stepFailed')
+
 }
 testExecutor(tests[0], sd, hooks);

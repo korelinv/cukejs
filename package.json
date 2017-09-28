@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/korelinv/cukejs/issues"
   },
-  "homepage": "https://github.com/korelinv/cukejs#readme"
+  "homepage": "https://github.com/korelinv/cukejs#readme",
+  "dependencies": {
+    "uuid": "^3.1.0"
+  }
 }
