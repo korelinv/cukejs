@@ -6,7 +6,7 @@ Feature: test feature
 
     #comment 1
     Background: background_name
-        Given Log in
+        Given Log in as "agent"
 
     Scenario: test scenario 1
         Then logout
