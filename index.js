@@ -1,8 +1,9 @@
 const featureParser = require('./lib/featureParser');
 const testBuilder = require('./lib/testBuilder');
+const GetDefenitions = require('./lib/stepsDefiner');
 const testExecutor = require('./lib/testExecutor');
 
-
+/*
 function DefineStep(regexp, method)
 {
     return {
@@ -24,16 +25,18 @@ function GetDefenitions(files)
 
     return defenitions;
 };
+*/
 
 let defs = [
-    './steps/given.js',
-    './steps/then.js',
-    './steps/when.bootstrap.js',
-    './steps/when.js',
-    './steps/when.kpgz.js'
+    require('./steps/given.js'),
+    require('./steps/then.js'),
+    require('./steps/when.bootstrap.js'),
+    require('./steps/when.js'),
+    require('./steps/when.kpgz.js')
 ];
 
 console.log(GetDefenitions(defs));
+
 
 
 /*
