@@ -43,7 +43,6 @@ gulp.task('tests:run', function(done) {
             //before: () => console.log('before'),
             //after: () => console.log('after'),
             beforeTest: (data) => {
-
                 data.context = {
                     driver: new webdriver.Builder()
                       .forBrowser('chrome')
@@ -52,9 +51,10 @@ gulp.task('tests:run', function(done) {
                     by: webdriver.By,
                     until: webdriver.until
                 };
-
             },
-            //afterTest: () => console.log('afterTest'),
+            afterTest: (data) => {
+                data.context.driver.close();
+            },
             //testPassed: () => console.log('testPassed'),
             //testFailed: () => console.log('testFailed'),
             //beforeStep: () => console.log('beforeStep'),
