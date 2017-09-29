@@ -24,7 +24,6 @@ RunBundle({
         //beforeStep: () => console.log('after'),
         //afterStep: () => console.log('afterStep'),
         //stepPassed: () => console.log('stepPassed'),
-        stepPassed: (d) => console.log(d),
         //stepFailed: () => console.log('stepFailed')
     }
 });
