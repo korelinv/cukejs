@@ -42,18 +42,17 @@ gulp.task('tests:run', function(done) {
         hooks: {
             //before: () => console.log('before'),
             //after: () => console.log('after'),
-            beforeTest: (data) => {
-                data.context = {
-                    driver: new webdriver.Builder()
-                      .forBrowser('chrome')
-                      .usingServer('http://localhost:4444/wd/hub')
-                      .build(),
-                    by: webdriver.By,
-                    until: webdriver.until
-                };
+            beforeTest: ({context}) => {
+                context.by = webdriver.By;
+                context.until = webdriver.until;
+
+                return context.driver = new webdriver.Builder()
+                    .forBrowser('chrome')
+                    .usingServer('http://localhost:4444/wd/hub')
+                    .build();
             },
             afterTest: (data) => {
-                data.context.driver.close();
+                return data.context.driver.close();
             },
             //testPassed: () => console.log('testPassed'),
             //testFailed: () => console.log('testFailed'),
