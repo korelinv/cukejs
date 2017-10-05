@@ -144,8 +144,47 @@ describe('Test Builder module', function() {
 
     describe('#buildOutlines(feature, nameBuilder)', function() {
 
-        it('', function() {
+        it('should return array of test builds from outline', function() {
+            let build = buildOutlines();
+            let result = build(feature, nameBuilderMock);
+            let expected = [
+                [
+                    {
+                      'tags': [
+                          '@tag'
+                      ],
+                      'name': 'baz',
+                      'content': [
+                          'bar',
+                          'biz bar'
+                      ]
+                    },
+                    {
+                        'tags': [
+                            '@tag'
+                        ],
+                        'name': 'baz',
+                        'content': [
+                            'bar',
+                            'biz baz'
+                        ]
+                    }
+                ],
+                [
+                    {
+                        'tags': [
+                            '@tag'
+                        ],
+                        'name': 'baz',
+                        'content': [
+                            'bar',
+                            'biz <foo>'
+                        ]
+                    }
+                ]
+            ];
 
+            assert.deepStrictEqual(result, expected);
         });
 
     });
