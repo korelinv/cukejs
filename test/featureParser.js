@@ -4,11 +4,11 @@ const getFile = require('../lib/featureParser/getFile');
 const identifyLine = require('../lib/featureParser/identifyLine');
 const featureParser = require('../lib/featureParser/featureParser');
 
-describe('Parse feature', function() {
+describe('Feature Parser module', function() {
 
     describe('#getFile(path)', function() {
 
-        let fs = {
+        let fsMock = {
             readFileSync: () => `
 
 
@@ -32,9 +32,9 @@ describe('Parse feature', function() {
 
                         `
         };
-        let get = getFile(fs);
+        let get = getFile(fsMock);
 
-        it('should split file into trimmed lines & strip of empty lines', function() {
+        it('should split file into array of lines & strip off empty ones', function() {
             let expected = [
                 '@tag',
                 'Feature: ft',
@@ -55,6 +55,36 @@ describe('Parse feature', function() {
 
     });
 
+    describe('#identifyLine(line)', function() {
+
+        let etokenMock = {
+            FOO: 0,
+            BAR: 1,
+            NOMATCH: 2
+        };
+        let tokensMock = [
+            {
+                type: 0,
+                regexp: /foo/
+            }
+        ];
+        let identify = identifyLine(tokensMock, etokenMock);
+
+        it('shoud identify line', function() {
+            let expected = 0
+            let result = identify('foo');
+
+            assert.equal(result, expected);
+        });
+
+        it('shoud return nomatch code', function() {
+            let expected = 2
+            let result = identify('bar');
+
+            assert.equal(result, expected);
+        });
+
+    });
 
     describe('#featureParser(path)', function() {
 
@@ -73,7 +103,7 @@ describe('Parse feature', function() {
         ];
         let parse = featureParser(null, null, getFileMock, null);
 
-        it('should return valid feature object', function() {
+        it('should return exact feature object', function() {
             let expected = {
                 tags: [
                     '@tag'
