@@ -1,10 +1,46 @@
 const assert = require('assert');
-const tokenEnum = require('../lib/featureParser/tokenEnum');
 const getFile = require('../lib/featureParser/getFile');
 const identifyLine = require('../lib/featureParser/identifyLine');
 const featureParser = require('../lib/featureParser/featureParser');
 
 describe('Feature Parser module', function() {
+
+    describe('#TOKENS', function() {
+
+        let TOKENS = require('../lib/featureParser/tokenEnum');
+
+        it('tokens should have name and regexp fields', function() {
+            TOKENS.forEach((token, index) => {
+                assert.equal(!!token.name, true, `token[${index}] should have property "name"`);
+                assert.equal(!!token.regexp, true, `token[${index}] should have property "regexp"`);
+            });
+        });
+
+        it('tokens should have consistent structure', function() {
+            let keys = Object.keys(TOKENS[0]);
+
+            TOKENS.forEach((token, index) => {
+                assert.deepStrictEqual(Object.keys(token), keys);
+            });
+        });
+
+        it('tokens should contain essential values', function() {
+            let shouldContain = [
+                'comment',
+                'tag',
+                'feature',
+                'background',
+                'scenario',
+                'scenario outline',
+                'step',
+                'examples',
+                'table row'
+            ];
+
+            shouldContain.forEach((value) => TOKENS.findIndex((token) => value === token.name));
+        });
+
+    });
 
     describe('#getFile(path)', function() {
 
@@ -59,12 +95,11 @@ describe('Feature Parser module', function() {
 
         let etokenMock = {
             FOO: 0,
-            BAR: 1,
-            NOMATCH: 2
+            BAR: 1
         };
         let tokensMock = [
             {
-                type: 0,
+                name: 0,
                 regexp: /foo/
             }
         ];
@@ -78,7 +113,7 @@ describe('Feature Parser module', function() {
         });
 
         it('shoud return nomatch code', function() {
-            let expected = 2
+            let expected = -1
             let result = identify('bar');
 
             assert.equal(result, expected);
@@ -101,7 +136,7 @@ describe('Feature Parser module', function() {
             '| foo |',
             '| bar |'
         ];
-        let parse = featureParser(null, null, getFileMock, null);
+        let parse = featureParser(null, getFileMock, null);
 
         it('should return exact feature object', function() {
             let expected = {
