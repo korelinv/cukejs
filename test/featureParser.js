@@ -130,6 +130,7 @@ describe('Feature Parser module', function() {
             'Given first',
             'Scenario: sc',
             'Then second',
+            'Then third "@test"',
             'Scenario Outline:',
             'Then second outline <foo>',
             'Examples:',
@@ -154,7 +155,8 @@ describe('Feature Parser module', function() {
                     {
                         name: 'sc',
                         content: [
-                            'second'
+                            'second',
+                            'third "@test"'
                         ]
                     }
                 ],
