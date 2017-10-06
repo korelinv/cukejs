@@ -141,7 +141,7 @@ describe('Feature Parser module', function() {
         it('should return exact feature object', function() {
             let expected = {
                 tags: [
-                    '@tag'
+                    'tag'
                 ],
                 name: 'ft',
                 background: {

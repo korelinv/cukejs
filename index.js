@@ -3,6 +3,12 @@ const RunBundle = require('./lib/bundleRunner');
 module.exports = RunBundle;
 
 
-const parse = require('./lib/featureParser/featureParser')();
+const transpile = require('./lib/featureTranspiler/featureTranspiler')();
 
-console.log(JSON.stringify(parse('test.feature'), null, '  '));
+transpile('test.feature', {
+    nameBuilder: () => 'foo',
+    indent: true,
+    indentation: '    ',
+    space: true,
+    spacing: 1
+}).map(el => console.log(el));
